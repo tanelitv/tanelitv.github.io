@@ -2,36 +2,42 @@
 let charac, charac2, charac3;
 let r,g,b;
 		
-  function StartBLE() {
-    let filters = [];
+function StartBLE() {
+	let filters = [];
     let options = {};
-
-
-    navigator.bluetooth.requestDevice({ filters: [{ services: ['000000ff-0000-1000-8000-00805f9b34fb']  }] })
-.then(device => device.gatt.connect())
-.then(server => {
-  
-  return server.getPrimaryService('000000ff-0000-1000-8000-00805f9b34fb');
-})
-.then(service => {
-  service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb').then(characteristic => {charac = characteristic});
-  service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb').then(characteristic => {charac2 = characteristic});
-  service.getCharacteristic('0000ff03-0000-1000-8000-00805f9b34fb').then(characteristic => {charac3 = characteristic});
-  return service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
-})
-.then(characteristic => {
-  
-	
-  return characteristic.readValue();
-})
-.then(value => {
-	let col = "#" + value.getUint8(0).toString(16) + value.getUint8(1).toString(16) + value.getUint8(2).toString(16);
-	document.getElementById("html5colorpicker").setAttribute("value", col);
-	console.log(col);
-
-})
-.catch(error => { console.error(error); });
-  }
+	navigator.bluetooth.requestDevice({ filters: [{ services: ['000000ff-0000-1000-8000-00805f9b34fb']  }] })
+	.then(device => device.gatt.connect())
+	.then(server => {
+		return server.getPrimaryService('000000ff-0000-1000-8000-00805f9b34fb');
+	})
+	.then(service => {
+		service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb')
+	.then(characteristic => {
+		charac = characteristic;
+		characteristic.readValue()
+	.then(value => {
+		let col = "#" + value.getUint8(0).toString(16) + value.getUint8(1).toString(16) + value.getUint8(2).toString(16);
+		document.getElementById("html5colorpicker").setAttribute("value", col);
+	});
+	});
+	service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb')
+	.then(characteristic => {
+		charac2 = characteristic;
+		characteristic.readValue()
+	.then(value => {
+		document.getElementById("myRange").value = value.getUint8();
+		});
+	});
+		service.getCharacteristic('0000ff03-0000-1000-8000-00805f9b34fb')
+	.then(characteristic => {charac3 = characteristic});
+		return service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
+	})
+	.then(characteristic => {
+	})
+	.then(value => {
+	})
+	.catch(error => { console.error(error); });
+	}
   function Writete() {
   let sensorbits = 0;
   	if (document.getElementById("motionsensor").checked == 1) {
@@ -51,49 +57,46 @@ let r,g,b;
 	a_rgb = Int8Array.of(r, g, b);
 	a_lum = Int8Array.of(lum);
 	a_sensorbits = Int8Array.of(sensorbits);
-  charac.writeValue(a_rgb);
-  charac2.writeValue(a_lum);
-  charac3.writeValue(a_sensorbits);
+	charac.writeValue(a_rgb);
+	charac2.writeValue(a_lum);
+	charac3.writeValue(a_sensorbits);
   }
 
 	function clickColor() {
 	colours = document.getElementById("html5colorpicker").value;
-	console.log(colours);
 	}
 	function Read() {
-
+			charac2.readValue().then(value => {
+		})
+			charac3.readValue().then(value => {
+		})
 
 		return charac.readValue().then(value => {
 
-			console.log(` ${value.getUint8(0)}`);
-			console.log(` ${value.getUint8(1)}`);
-			console.log(` ${value.getUint8(2)}`);
 			document.getElementById("abc").innerHTML = "";
 			document.getElementById("abc").innerHTML += "Red:" + value.getUint8(0);
 			document.getElementById("abc").innerHTML += "Green:" + value.getUint8(1);
 			document.getElementById("abc").innerHTML += "Blue:" + value.getUint8(2);
 		})
-			charac2.readValue().then(value => {
-			console.log(` ${value.getUint8(0)}`);
-		})
-			charac3.readValue().then(value => {
-			console.log(` ${value.getUint8(0)}`);
-		})
-
+	}
+		function Turnoff() {
+		let bright = Int8Array.of(0);
+		document.getElementById("myRange").value = bright;
+		charac2.writeValue(bright);
 	}
   </script>
 
   
 <html>
-    <div class="x"> <button type="button" oanclick="StartBLE()">Start BLE</button></div>
+    <div class="x"> <button type="button" onclick="StartBLE()">Start BLE</button></div>
 
     <br>
     <div id="IoButtons" class="x">
         <div id="ColorIntensity">
-           
+			Colour: <br>
             <input type="color" id="html5colorpicker" onchange="clickColor(0, -1, -1, 5)" value="#ff0000" style="width:80%;">
-            <br>
-            <div class="slidecontainer">	
+            <br> <br>
+            <div class="slidecontainer">	Brightness: <br>
                 <input type="range" min="0" max="255" value="0" class="slider" id="myRange"style="width:80%;"">
             </div>
         </div>
@@ -109,6 +112,7 @@ let r,g,b;
 		
 	<button type="button" onclick="Writete()">Write</button>
     <button type="button" onclick="Read()">Read</button>
+	<button type="button" onclick="Turnoff()">Turn off</button>
 	
 	</div>
     </div>
