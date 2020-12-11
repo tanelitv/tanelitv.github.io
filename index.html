@@ -68,17 +68,16 @@ function StartBLE() {
 	function Read() {
 			charac2.readValue().then(value => {
 			document.getElementById("abc").innerHTML = "";
-			document.getElementById("abc").innerHTML += "Brightness:" + value.getUint8(0);
+			document.getElementById("abc").innerHTML += "Brightness:" + value.getUint8(0) + " ";
 		})
 			charac3.readValue().then(value => {
 		})
 
 		return charac.readValue().then(value => {
 
-			document.getElementById("abc").innerHTML += "Red:" + value.getUint8(0);
-			document.getElementById("abc").innerHTML += "Green:" + value.getUint8(1);
-			document.getElementById("abc").innerHTML += "Blue:" + value.getUint8(2);
-z
+			document.getElementById("abc").innerHTML += "Red:" + value.getUint8(0) + " "
+								 + "Green:" + value.getUint8(1) + " "
+			 					 + "Blue:" + value.getUint8(2);
 		})
 	}
 		function Turnoff() {
