@@ -67,11 +67,13 @@ function StartBLE() {
 	colours = document.getElementById("html5colorpicker").value;
 	}
 	function Read() {
+		
 			charac2.readValue().then(value => {
 			document.getElementById("abc").innerHTML = "";
 			document.getElementById("abc").innerHTML += "Brightness:" + value.getUint8(0) + " ";
 		})
 			charac3.readValue().then(value => {
+				document.getElementById("abc").innerHTML += "Mode:" + value.getUint8(0) + " ";
 		})
 
 		return charac.readValue().then(value => {
