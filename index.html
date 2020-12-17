@@ -1,6 +1,6 @@
 <script>
 let charac, charac2, charac3;
-let r,g,b;
+let r,g,b,prev_r, prev_g, prev_b, prev_bright, mode;
 		
 function StartBLE() {
 	let filters = [];
@@ -16,6 +16,9 @@ function StartBLE() {
 		charac = characteristic;
 		characteristic.readValue()
 	.then(value => {
+		prev_r = value.getUint8(0);
+		prev_g = value.getUint8(1);
+		prev_b = value.getUint8(2);
 		let col = "#" + value.getUint8(0).toString(16) + value.getUint8(1).toString(16) + value.getUint8(2).toString(16);
 		document.getElementById("html5colorpicker").setAttribute("value", col);
 	});
@@ -25,9 +28,12 @@ function StartBLE() {
 		charac2 = characteristic;
 		characteristic.readValue()
 	.then(value => {
+	prev_bright = value.getUint8();
+		
 		document.getElementById("myRange").value = value.getUint8();
 		});
 	});
+		mode = value.getUint8();
 		service.getCharacteristic('0000ff03-0000-1000-8000-00805f9b34fb')
 	.then(characteristic => {charac3 = characteristic});
 		return service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
@@ -57,9 +63,20 @@ function StartBLE() {
 	a_rgb = Int8Array.of(r, g, b);
 	a_lum = Int8Array.of(lum);
 	a_sensorbits = Int8Array.of(sensorbits);
-	charac.writeValue(a_rgb);
-	charac2.writeValue(a_lum);
-	charac3.writeValue(a_sensorbits);
+	if (prev_r != r && prev_g != g && prev_b != g) {
+		charac.writeValue(a_rgb);
+		prev_r = r;
+		prev_g = g;
+		prev_b = b;
+	}
+	if (prev_bright != lum) {
+		charac2.writeValue(a_lum);
+		prev_bright = lum;
+	}
+	if (mode != sensorbits) {
+		charac3.writeValue(a_sensorbits);
+		mode = sensorbits;
+		}
   }
 
 	function clickColor() {
@@ -68,16 +85,17 @@ function StartBLE() {
 	function Read() {
 			charac2.readValue().then(value => {
 			document.getElementById("abc").innerHTML = "";
-			document.getElementById("abc").innerHTML += "Brightness:" + value.getUint8(0) + " ";
+			document.getElementById("abc").innerHTML += "Brightness:" + value.getUint8(0);
 		})
 			charac3.readValue().then(value => {
 		})
 
 		return charac.readValue().then(value => {
 
-			document.getElementById("abc").innerHTML += "Red:" + value.getUint8(0) + " "
-								 + "Green:" + value.getUint8(1) + " "
-			 					 + "Blue:" + value.getUint8(2);
+			document.getElementById("abc").innerHTML += "Red:" + value.getUint8(0);
+			document.getElementById("abc").innerHTML += "Green:" + value.getUint8(1);
+			document.getElementById("abc").innerHTML += "Blue:" + value.getUint8(2);
+z
 		})
 	}
 		function Turnoff() {
