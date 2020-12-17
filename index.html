@@ -1,7 +1,8 @@
 
 <script>
 let charac, charac2, charac3;
-let r,g,b;
+let r,g,b, brightness;
+let toggle = 0;
 		
 function StartBLE() {
 	let filters = [];
@@ -26,6 +27,7 @@ function StartBLE() {
 		charac2 = characteristic;
 		characteristic.readValue()
 	.then(value => {
+		brightness = value.getUint8();
 		document.getElementById("myRange").value = value.getUint8();
 		});
 	});
@@ -55,6 +57,7 @@ function StartBLE() {
 	g = parseInt(c.substring(3,5),16);
 	b = parseInt(c.substring(5),16);
 	lum = document.getElementById("myRange").value;
+	brightness = lum;
 	a_rgb = Int8Array.of(r, g, b);
 	a_lum = Int8Array.of(lum);
 	a_sensorbits = Int8Array.of(sensorbits);
@@ -83,10 +86,18 @@ function StartBLE() {
 			 					 + "Blue:" + value.getUint8(2);
 		})
 	}
-		function Turnoff() {
-		let bright = Int8Array.of(0);
-		document.getElementById("myRange").value = bright;
-		charac2.writeValue(bright);
+		function Toggle() {
+			if (toggle) {
+				bright = Int8Array.of(brightness);
+				charac2.writeValue(bright);
+				toggle = !toggle;
+			}
+			else {
+				let bright = Int8Array.of(0);
+				charac2.writeValue(bright);	
+				toggle = !toggle;
+			}
+
 	}
   </script>
 
@@ -101,7 +112,7 @@ function StartBLE() {
             <input type="color" id="html5colorpicker" onchange="clickColor(0, -1, -1, 5)" value="#ff0000" style="width:80%;">
             <br> <br>
             <div class="slidecontainer">	Brightness: <br>
-                <input type="range" min="0" max="255" value="0" class="slider" id="myRange"style="width:80%;"">
+                <input type="range" min="1" max="255" value="1" class="slider" id="myRange"style="width:80%;"">
             </div>
         </div>
         <br>
@@ -116,7 +127,7 @@ function StartBLE() {
 		
 	<button type="button" onclick="Writete()">Write</button>
     <button type="button" onclick="Read()">Read</button>
-	<button type="button" onclick="Turnoff()">Turn off</button>
+	<button type="button" onclick="Toggle()">Toggle</button>
 	
 	</div>
     </div>
