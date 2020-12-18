@@ -103,7 +103,7 @@ function StartBLE() {
 z
 		})
 	}
-		function Turnoff() {
+		function Toggle() {
 		let bright = Int8Array.of(0);
 		document.getElementById("myRange").value = bright;
 		charac2.writeValue(bright);
@@ -140,7 +140,7 @@ z
 		
 	<button type="button" onclick="Writete()">Write</button>
     <button type="button" onclick="Read()">Read</button>
-	<button type="button" onclick="Turnoff()">Turn off</button>
+	<button type="button" onclick="Toggle()">Toggle</button>
 	
 	</div>
     </div>
