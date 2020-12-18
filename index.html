@@ -33,9 +33,12 @@ function StartBLE() {
 		document.getElementById("myRange").value = value.getUint8();
 		});
 	});
-		mode = value.getUint8();
+		
 		service.getCharacteristic('0000ff03-0000-1000-8000-00805f9b34fb')
-	.then(characteristic => {charac3 = characteristic});
+	.then(characteristic => {
+			charac3 = characteristic;
+			mode = value.getUint8();
+		});
 		return service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
 	})
 	.then(characteristic => {
