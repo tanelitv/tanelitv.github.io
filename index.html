@@ -1,5 +1,5 @@
 <script>
-let charac, charac2, charac3;
+let charac_rgb, charac_bright, charac_mode;
 let r,g,b,prev_r, prev_g, prev_b, prev_bright, mode;
 		mode = 0;
 function StartBLE() {
@@ -13,7 +13,7 @@ function StartBLE() {
 	.then(service => {
 		service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb')
 	.then(characteristic => {
-		charac = characteristic;
+		charac_rgb = characteristic;
 		characteristic.readValue()
 	.then(value => {
 		prev_r = value.getUint8(0);
@@ -25,7 +25,7 @@ function StartBLE() {
 	});
 	service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb')
 	.then(characteristic => {
-		charac2 = characteristic;
+		charac_bright = characteristic;
 		characteristic.readValue()
 	.then(value => {
 	prev_bright = value.getUint8();
@@ -36,7 +36,7 @@ function StartBLE() {
 		
 		service.getCharacteristic('0000ff03-0000-1000-8000-00805f9b34fb')
 	.then(characteristic => {
-			charac3 = characteristic;
+			charac_mode = characteristic;
 			mode = value.getUint8();
 		});
 		return service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
@@ -47,9 +47,9 @@ function StartBLE() {
 	})
 	.catch(error => { console.error(error); });
 	}
-  function Writete() {
+function Writete() {
   
-  let sensorbits = 0;
+	let sensorbits = 0;
   	if (document.getElementById("Mode").value == "MS") {
 	sensorbits |= (1 << 2);
 	}
@@ -69,53 +69,53 @@ function StartBLE() {
 	a_lum = Int8Array.of(lum);
 	a_sensorbits = Int8Array.of(sensorbits);
 	if (prev_r != r || prev_g != g || prev_b != b) {
-		charac.writeValue(a_rgb);
+		charac_rgb.writeValue(a_rgb);
 		prev_r = r;
 		prev_g = g;
 		prev_b = b;
 	}
 	if (prev_bright != lum) {
-		charac2.writeValue(a_lum);
+		charac_bright.writeValue(a_lum);
 		prev_bright = lum;
 	}
 	if (mode != sensorbits) {
-		charac3.writeValue(a_sensorbits);
+		charac_mode.writeValue(a_sensorbits);
 		mode = sensorbits;
 		}
-  }
+	}
 
 	function clickColor() {
 	colours = document.getElementById("html5colorpicker").value;
 	}
 	function Read() {
-			charac2.readValue().then(value => {
-			document.getElementById("abc").innerHTML = "";
-			document.getElementById("abc").innerHTML += "Brightness:" + value.getUint8(0);
+			charac_bright.readValue().then(value => {
+			document.getElementById("log").innerHTML = "";
+			document.getElementById("log").innerHTML += "Brightness:" + value.getUint8(0);
 		})
-			charac3.readValue().then(value => {
+			charac_mode.readValue().then(value => {
 		})
 
-		return charac.readValue().then(value => {
+		return charac_rgb.readValue().then(value => {
 
-			document.getElementById("abc").innerHTML += "Red:" + value.getUint8(0);
-			document.getElementById("abc").innerHTML += "Green:" + value.getUint8(1);
-			document.getElementById("abc").innerHTML += "Blue:" + value.getUint8(2);
-z
+			document.getElementById("log").innerHTML += "Red:" + value.getUint8(0);
+			document.getElementById("log").innerHTML += "Green:" + value.getUint8(1);
+			document.getElementById("log").innerHTML += "Blue:" + value.getUint8(2);
+
 		})
 	}
 		function Toggle() {
 		let bright = Int8Array.of(0);
 		document.getElementById("myRange").value = bright;
-		charac2.writeValue(bright);
+		charac_bright.writeValue(bright);
 	}
   </script>
 
   
 <html>
-    <div class="x"> <button type="button" onclick="StartBLE()">Start BLE</button></div>
+    <div class="middle"> <button type="button" onclick="StartBLE()">Start BLE</button></div>
 
     <br>
-    <div id="IoButtons" class="x">
+    <div id="IoButtons" class="middle">
         <div id="ColorIntensity">
 			Colour: <br>
             <input type="color" id="html5colorpicker" onchange="clickColor(0, -1, -1, 5)" value="#ff0000" style="width:80%;">
@@ -128,15 +128,15 @@ z
 <form>
   <label for="Mode">Choose mode:</label>
   <select name="Mode" id="Mode">
-    <option id="MAN" value="MANUAL">Manual</option>
-    <option id="MS" value="MS">Motion sensor</option>
-    <option id="US" value="US">Ultrasonic sensor</option>
-    <option id="AL" value="AL">Ambient light</option>
+    <option value="MANUAL">Manual</option>
+    <option value="MS">Motion sensor</option>
+    <option value="US">Ultrasonic sensor</option>
+    <option value="AL">Ambient light</option>
     
   </select>
   <br><br>
 </form>
-			<div class="x">
+			<div class="middle">
 		
 	<button type="button" onclick="Writete()">Write</button>
     <button type="button" onclick="Read()">Read</button>
@@ -145,20 +145,12 @@ z
 	</div>
     </div>
 	
-	<div id="abc" class="x"></div>
+	<div id="log" class="middle"></div>
     </html>
 	
 	<style>
-	.z {
-	text-align: left;
-	}
-	.y {
-	text-align: center;
-	margin-left: 45%;
-	margin-right: 45%;
-	}
-.x {
-  grid-area: myArea;
+
+.middle {
   padding: 25px;
   text-align: center;
 }
