@@ -65,7 +65,7 @@ function StartBLE() {
 	a_rgb = Int8Array.of(r, g, b);
 	a_lum = Int8Array.of(lum);
 	a_sensorbits = Int8Array.of(sensorbits);
-	if (prev_r != r && prev_g != g && prev_b != g) {
+	if (prev_r != r || prev_g != g || prev_b != b) {
 		charac.writeValue(a_rgb);
 		prev_r = r;
 		prev_g = g;
