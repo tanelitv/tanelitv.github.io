@@ -36,9 +36,13 @@ function StartBLE() {
 		mode = value.getUint8();
 		service.getCharacteristic('0000ff03-0000-1000-8000-00805f9b34fb')
 	.then(characteristic => {charac3 = characteristic});
-		
+		return service.getCharacteristic('0000ff01-0000-1000-8000-00805f9b34fb');
 	})
-
+	.then(characteristic => {
+	})
+	.then(value => {
+	})
+	.catch(error => { console.error(error); });
 	}
   function Writete() {
   
